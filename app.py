@@ -7,7 +7,10 @@ from langchain.callbacks import StreamlitCallbackHandler
 import os
 from dotenv import load_dotenv
 from langchain.agents import Agent
-
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import Tool
+from langchain.chains.summarize import load_summarize_chain
+from langchain.document_loaders import WebBaseLoader
 
 
 ## Arxiv and wikipedia Tools
@@ -19,6 +22,18 @@ wiki=WikipediaQueryRun(api_wrapper=api_wrapper)
 
 search=DuckDuckGoSearchRun(name="Search")
 
+# Smart Summarization Tool
+def smart_summarize(url):
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    summarize_chain = load_summarize_chain(llm, chain_type="map_reduce")
+    return summarize_chain.run(docs)
+
+summarize_tool = Tool(
+    name="SmartSummarizer",
+    func=smart_summarize,
+    description="Summarize the contents of a web page given its URL."
+)
 
 st.title("🔎 LangChain - Chat with search")
 """
@@ -29,6 +44,9 @@ In this example, I am using `StreamlitCallbackHandler` to display the thoughts a
 ## Sidebar for settings
 st.sidebar.title("Settings")
 api_key=st.sidebar.text_input("Enter your Groq API Key:",type="password")
+
+# Contextual Memory
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 if "messages" not in st.session_state:
     st.session_state["messages"]=[
