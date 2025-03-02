@@ -8,24 +8,7 @@ import os
 from dotenv import load_dotenv
 from langchain.agents import Agent
 
-# Ensure messages exist in session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
-# Debug: Show current messages
-st.write(st.session_state.messages)
-
-# Dummy search agent setup for example (replace with your actual setup)
-search_agent = Agent()
-
-# Callback example (replace with your actual callback)
-st_cb = lambda x: x
-
-try:
-    response = search_agent.run(st.session_state.messages, callbacks=[st_cb])
-    st.write(response)
-except Exception as e:
-    st.error(f"An error occurred: {e}")
 
 ## Arxiv and wikipedia Tools
 arxiv_wrapper=ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=200)
@@ -51,6 +34,8 @@ if "messages" not in st.session_state:
     st.session_state["messages"]=[
         {"role":"assisstant","content":"Hi,I'm a chatbot who can search the web. How can I help you?"}
     ]
+    st.write(st.session_state.messages)
+
 
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg['content'])
@@ -66,7 +51,10 @@ if prompt:=st.chat_input(placeholder="What is machine learning?"):
 
     with st.chat_message("assistant"):
         st_cb=StreamlitCallbackHandler(st.container(),expand_new_thoughts=False)
-        response=search_agent.run(st.session_state.messages,callbacks=[st_cb])
+        try:
+            response=search_agent.run(st.session_state.messages,callbacks=[st_cb])
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
         st.session_state.messages.append({'role':'assistant',"content":response})
         st.write(response)
 
