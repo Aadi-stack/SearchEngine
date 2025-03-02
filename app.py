@@ -6,6 +6,26 @@ from langchain.agents import initialize_agent,AgentType
 from langchain.callbacks import StreamlitCallbackHandler
 import os
 from dotenv import load_dotenv
+from langchain.agents import Agent
+
+# Ensure messages exist in session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Debug: Show current messages
+st.write(st.session_state.messages)
+
+# Dummy search agent setup for example (replace with your actual setup)
+search_agent = Agent()
+
+# Callback example (replace with your actual callback)
+st_cb = lambda x: x
+
+try:
+    response = search_agent.run(st.session_state.messages, callbacks=[st_cb])
+    st.write(response)
+except Exception as e:
+    st.error(f"An error occurred: {e}")
 
 ## Arxiv and wikipedia Tools
 arxiv_wrapper=ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=200)
