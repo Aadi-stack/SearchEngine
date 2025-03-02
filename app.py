@@ -22,7 +22,7 @@ search=DuckDuckGoSearchRun(name="Search")
 
 st.title("🔎 LangChain - Chat with search")
 """
-In this example, I am using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app
+#In this example, I am using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app
 
 """
 
